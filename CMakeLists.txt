@@ -39,7 +39,7 @@ if(WIN32)
 	target_include_directories(lima${NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/sdk/msvc/include")
 	target_include_directories(lima${NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/sdk/msvc/include/legacy")
 
-	target_compile_definitions(lima${NAME} PRIVATE LIBPHAMAMATSU_EXPORTS)
+	target_compile_definitions(lima${NAME} PRIVATE LIBHAMAMATSU_EXPORTS)
 	
 	#LIBRARIES
 	find_library(HAMAMATSU_DCAMAPI_LIB dcamapi "{CMAKE_CURRENT_SOURCE_DIR}/sdk/msvc/bin")
