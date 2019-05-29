@@ -289,34 +289,29 @@ namespace lima
         string dcam_get_string( HDCAM hdcam ,        ///< [in] camera handle 
                                 int32 idStr ) const; ///< [in] string identifier
 
-        void manage_trace( DebObj     & deb                     ,             ///< [in] trace object
-                           const char * optDesc   = NULL        ,             ///< [in] optional description (NULL if not used)
+        void manage_trace( const char * optDesc   = NULL        ,             ///< [in] optional description (NULL if not used)
                            int32        idStr     = DCAMERR_NONE,             ///< [in] error string identifier (DCAMERR_NONE if no hdcam error to trace)
                            const char * fct       = NULL        ,             ///< [in] function name which returned the error (NULL if not used)
                            const char * opt       = NULL        , ...) const; ///< [in] optional string to concat to the error string (NULL if not used)
 
         static void static_manage_trace( const Camera     * const cam              ,       ///< [in] camera object
-                                         DebObj           & deb                    ,       ///< [in] trace object
                                          const char       * optDesc  = NULL        ,       ///< [in] optional description (NULL if not used)
                                          int32              idStr    = DCAMERR_NONE,       ///< [in] error string identifier (DCAMERR_NONE if no hdcam error to trace)
                                          const char       * fct      = NULL        ,       ///< [in] function name which returned the error (NULL if not used)
                                          const char       * opt      = NULL        , ...); ///< [in] optional string to concat to the error string (NULL if not used)
 
-        void manage_error( DebObj     & deb                     ,             ///< [in] trace object
-                           const char * optDesc   = NULL        ,             ///< [in] optional description (NULL if not used)
+        void manage_error( const char * optDesc   = NULL        ,             ///< [in] optional description (NULL if not used)
                            int32        idStr     = DCAMERR_NONE,             ///< [in] error string identifier (DCAMERR_NONE if no hdcam error to trace)
                            const char * fct       = NULL        ,             ///< [in] function name which returned the error (NULL if not used)
                            const char * opt       = NULL        , ...) const; ///< [in] optional string to concat to the error string (NULL if not used)
 
         static std::string static_manage_error( const Camera     * const cam              ,       ///< [in] camera object
-                                                DebObj           & deb                    ,       ///< [in] trace object
                                                 const char       * optDesc  = NULL        ,       ///< [in] optional description (NULL if not used)
                                                 int32              idStr    = DCAMERR_NONE,       ///< [in] error string identifier (DCAMERR_NONE if no hdcam error to trace)
                                                 const char       * fct      = NULL        ,       ///< [in] function name which returned the error (NULL if not used)
                                                 const char       * opt      = NULL        , ...); ///< [in] optional string to concat to the error string (NULL if not used)
 
         static std::string static_trace_string_va_list( const Camera     * const cam,  ///< [in] camera object
-                                                        DebObj           & deb      ,  ///< [in] trace object
                                                         const char       * optDesc  ,  ///< [in] optional description (NULL if not used)
                                                         int32              idStr    ,  ///< [in] error string identifier (DCAMERR_NONE if no hdcam error to trace)
                                                         const char       * fct      ,  ///< [in] function name which returned the error (NULL if not used)

@@ -145,7 +145,7 @@ Camera::Camera(const std::string& config_path, int camera_number)
 	}
 	else
 	{
-        manage_error( deb, "Unable to initialize the camera (Check if it is switched on or if an other software is currently using it).");
+        manage_error( "Unable to initialize the camera (Check if it is switched on or if an other software is currently using it).");
         THROW_HW_ERROR(Error) << "Unable to initialize the camera (Check if it is switched on or if an other software is currently using it).";
 	}
 }
@@ -178,7 +178,7 @@ Camera::~Camera()
         }
         else
         {
-            manage_error( deb, "dcam_close() failed !", err);
+            manage_error( "dcam_close() failed !", err);
             THROW_HW_ERROR(Error) << "dcam_close() failed !";
         }
 	}    
@@ -218,7 +218,7 @@ void Camera::getDetectorImageSize(Size& size) ///< [out] image dimensions
 
 	if ((0==xmax) || (0==ymax))
     {
-        manage_error( deb, "Cannot get detector size");
+        manage_error( "Cannot get detector size");
         THROW_HW_ERROR(Error) << "Cannot get detector size";
     }     
 
@@ -248,14 +248,14 @@ void Camera::getImageType(ImageType& type)
 			case 32:  type = Bpp32; break;
 			default:
 			{
-                manage_error( deb, "No compatible image type");
+                manage_error( "No compatible image type");
                 THROW_HW_ERROR(Error) << "No compatible image type";
 			}
 		}
 	}
 	else
 	{
-        manage_error( deb, "Unable to get image type.");
+        manage_error( "Unable to get image type.");
         THROW_HW_ERROR(Error) << "Unable to get image type.";
 	}
 }
@@ -276,7 +276,7 @@ void Camera::setImageType(ImageType type)
 			break;
 		}
 		default:
-            manage_error( deb, "This pixel format of the camera is not managed, only 16 bits cameras are already managed!");
+            manage_error( "This pixel format of the camera is not managed, only 16 bits cameras are already managed!");
             THROW_HW_ERROR(Error) << "This pixel format of the camera is not managed, only 16 bits cameras are already managed!";
 			break;
 	}
@@ -394,7 +394,7 @@ void Camera::setTrigMode(TrigMode mode) ///< [in] trigger mode to set
         }
         else
         {
-            manage_error( deb, "Failed to set trigger mode", DCAMERR_NONE, "setTrigMode", "VALUE=%d", mode);
+            manage_error( "Failed to set trigger mode", DCAMERR_NONE, "setTrigMode", "VALUE=%d", mode);
             THROW_HW_ERROR(Error) << "Failed to set trigger mode";
         }
 
@@ -404,7 +404,7 @@ void Camera::setTrigMode(TrigMode mode) ///< [in] trigger mode to set
             err = dcamprop_setvalue( m_camera_handle, DCAM_IDPROP_TRIGGERSOURCE, static_cast<double>(TriggerSource));
 	        if( failed(err) )
 	        {
-                manage_error( deb, "Cannot set trigger option", err, 
+                manage_error( "Cannot set trigger option", err, 
                               "dcamprop_setvalue", "IDPROP=DCAM_IDPROP_TRIGGERSOURCE, VALUE=%d", TriggerSource);
                 THROW_HW_ERROR(Error) << "Cannot set trigger option";
 	        }
@@ -416,7 +416,7 @@ void Camera::setTrigMode(TrigMode mode) ///< [in] trigger mode to set
 	        err = dcamprop_setvalue( m_camera_handle, DCAM_IDPROP_TRIGGERACTIVE, static_cast<double>(TriggerActive));
 	        if( failed(err) )
 	        {
-                manage_error( deb, "Cannot set trigger option", err, 
+                manage_error( "Cannot set trigger option", err, 
                               "dcamprop_setvalue", "IDPROP=DCAM_IDPROP_TRIGGERACTIVE, VALUE=%d", TriggerActive);
                 THROW_HW_ERROR(Error) << "Cannot set trigger option";
 	        }
@@ -428,7 +428,7 @@ void Camera::setTrigMode(TrigMode mode) ///< [in] trigger mode to set
 	        err = dcamprop_setvalue( m_camera_handle, DCAM_IDPROP_TRIGGER_MODE, static_cast<double>(TriggerMode));
 	        if( failed(err) )
 	        {
-                manage_error( deb, "Cannot set trigger option", err, 
+                manage_error( "Cannot set trigger option", err, 
                               "dcamprop_setvalue", "IDPROP=DCAM_IDPROP_TRIGGER_MODE, VALUE=%d", TriggerMode);
                 THROW_HW_ERROR(Error) << "Cannot set trigger option";
 	        }
@@ -470,7 +470,7 @@ void Camera::setExpTime(double exp_time) ///< [in] exposure time to set
 
         if( failed(err) )
 	    {
-            manage_error( deb, "Cannot set exposure time", err, 
+            manage_error( "Cannot set exposure time", err, 
                           "dcamprop_setvalue", "IDPROP=DCAM_IDPROP_EXPOSURETIME, VALUE=%lf", exp_time);
             THROW_HW_ERROR(Error) << "Cannot set exposure time";
 	    }
@@ -479,7 +479,7 @@ void Camera::setExpTime(double exp_time) ///< [in] exposure time to set
 
         double tempexp_time;
         getExpTime(tempexp_time);
-        manage_trace( deb, "Changed Exposure time", DCAMERR_NONE, NULL, "exp:%lf >> real:%lf", m_exp_time, tempexp_time);
+        manage_trace( "Changed Exposure time", DCAMERR_NONE, NULL, "exp:%lf >> real:%lf", m_exp_time, tempexp_time);
     }
 }
 
@@ -502,7 +502,7 @@ void Camera::getExpTime(double& exp_time) ///< [out] current exposure time
         
 	    if(failed(err) )
 	    {
-            manage_error( deb, "Cannot get exposure time", err, 
+            manage_error( "Cannot get exposure time", err, 
                           "dcamprop_getvalue", "DCAM_IDPROP_EXPOSURETIME");
             THROW_HW_ERROR(Error) << "Cannot get exposure time";
         }
@@ -529,7 +529,7 @@ void Camera::setLatTime(double lat_time) ///< [in] latency time
 
 	if (lat_time != 0.0)
 	{
-        manage_error( deb, "Latency is not supported");
+        manage_error( "Latency is not supported");
         THROW_HW_ERROR(Error) << "Latency is not supported";
 	}
 }
@@ -561,7 +561,7 @@ void Camera::getExposureTimeRange(double& min_expo,	///< [out] minimum exposure 
 
 	if( !dcamex_getfeatureinq( m_camera_handle, "DCAM_IDPROP_EXPOSURETIME", DCAM_IDPROP_EXPOSURETIME, FeatureObj ) )
 	{
-        manage_error( deb, "Failed to get exposure time");
+        manage_error( "Failed to get exposure time");
         THROW_HW_ERROR(Error) << "Failed to get exposure time";
 	}
 
@@ -655,7 +655,7 @@ Camera::Status Camera::getStatus() ///< [out] current camera status
         case CameraThread::InInit   :
         //case CameraThread::Stopped  :
         case CameraThread::Finished :
-            manage_error( deb, "CameraThread is on an invalid state.");
+            manage_error( "CameraThread is on an invalid state.");
 			return Camera::Fault   ;
 
 		default:
@@ -703,7 +703,7 @@ void Camera::checkRoi(const Roi & set_roi, ///< [in]  Roi values to set
 
         if(set_roi != hw_roi)
         {
-            manage_error( deb, "This ROI is not a valid one.", DCAMERR_NONE, "checkRoi");
+            manage_error( "This ROI is not a valid one.", DCAMERR_NONE, "checkRoi");
             THROW_HW_ERROR(Error) << "This ROI is not a valid one. Please try (" 
                                     << x      / m_bin.getX() << ", " 
                                     << y      / m_bin.getY() << ", " 
@@ -755,7 +755,7 @@ void Camera::setRoi(const Roi & set_roi) ///< [in] New Roi values
         Roi FullFrameRoi(Point(0, 0), Size(m_maxImageWidth, m_maxImageHeight));
         if(new_roi != FullFrameRoi)
         {
-            manage_error( deb, "Cannot change ROI in W-VIEW mode! Only full frame is supported.", DCAMERR_NONE, "setRoi");
+            manage_error( "Cannot change ROI in W-VIEW mode! Only full frame is supported.", DCAMERR_NONE, "setRoi");
             THROW_HW_ERROR(Error) << "Cannot change ROI in W-VIEW mode! Only full frame is supported.";
         }
     }
@@ -768,7 +768,7 @@ void Camera::setRoi(const Roi & set_roi) ///< [in] New Roi values
                                     set_roi_size.getWidth(), set_roi_size.getHeight()/2,
                                     0))
         {
-            manage_error( deb, "Cannot set detector ROI for View1 !");
+            manage_error( "Cannot set detector ROI for View1 !");
             THROW_HW_ERROR(Error) << "Cannot set detector ROI for View1!";
         }
 
@@ -777,7 +777,7 @@ void Camera::setRoi(const Roi & set_roi) ///< [in] New Roi values
                                     set_roi_size.getWidth(), set_roi_size.getHeight()/2,
                                     1))
         {
-            manage_error( deb, "Cannot set detector ROI for View2 !");
+            manage_error( "Cannot set detector ROI for View2 !");
             THROW_HW_ERROR(Error) << "Cannot set detector ROI for View2!";
         }
     }
@@ -788,7 +788,7 @@ void Camera::setRoi(const Roi & set_roi) ///< [in] New Roi values
                                     set_roi_size.getWidth(), set_roi_size.getHeight(),
                                     g_GetSubArrayDoNotUseView))
         {
-            manage_error( deb, "Cannot set detector ROI!");
+            manage_error( "Cannot set detector ROI!");
             THROW_HW_ERROR(Error) << "Cannot set detector ROI!";
         }
     }
@@ -808,7 +808,7 @@ void Camera::getRoi(Roi & hw_roi) ///< [out] Roi values
 
     if (!dcamex_getsubarrayrect( m_camera_handle, left, top, width,	height, GET_SUBARRAY_RECT_DO_NOT_USE_VIEW ) )
     {
-        manage_error( deb, "Cannot get detector ROI");
+        manage_error( "Cannot get detector ROI");
         THROW_HW_ERROR(Error) << "Cannot get detector ROI";
     }    
 
@@ -843,7 +843,7 @@ void Camera::traceAllRoi(void)
     {
         if (!dcamex_getsubarrayrect( m_camera_handle, left, top, width,	height, g_GetSubArrayDoNotUseView ) )
         {
-            manage_error( deb, "Cannot get detector ROI");
+            manage_error( "Cannot get detector ROI");
         }    
         else
         {
@@ -856,7 +856,7 @@ void Camera::traceAllRoi(void)
         {
             if (!dcamex_getsubarrayrect( m_camera_handle, left, top, width,	height, ViewIndex ) )
             {
-                manage_error( deb, "Cannot get detector View ROI");
+                manage_error( "Cannot get detector View ROI");
             }    
             else
             {
@@ -904,7 +904,7 @@ void Camera::setBin(const Bin & set_bin) ///< [in] binning values objects
     }
     else
     {
-        manage_error( deb, "Cannot set detector BIN", err, 
+        manage_error( "Cannot set detector BIN", err, 
                       "dcamprop_setvalue", "IDPROP=DCAM_IDPROP_BINNING, VALUE=%d", GetBinningMode(set_bin.getX()));
         THROW_HW_ERROR(Error) << "Cannot set detector BIN";
 	}
@@ -936,7 +936,7 @@ void Camera::getBin(Bin & hw_bin) ///< [out] binning values object
 	}
     else
     {
-        manage_error( deb, "Cannot get detector BIN", err, 
+        manage_error( "Cannot get detector BIN", err, 
                       "dcamprop_getvalue", "DCAM_IDPROP_BINNING");
         THROW_HW_ERROR(Error) << "Cannot get detector BIN";
     }
@@ -984,7 +984,7 @@ int32 Camera::GetBinningMode(const int binValue)	///< [in] binning value to chck
     if(binValue == 8 ) return DCAMPROP_BINNING__8 ;
     if(binValue == 16) return DCAMPROP_BINNING__16;
 
-    manage_error( deb, "Incoherent binning value - no mode found.", DCAMERR_NONE, "GetBinningMode", "binning value = %d", binValue);
+    manage_error( "Incoherent binning value - no mode found.", DCAMERR_NONE, "GetBinningMode", "binning value = %d", binValue);
     THROW_HW_ERROR(Error) << "Incoherent binning value - no mode found.";
 }
 
@@ -1004,7 +1004,7 @@ int Camera::GetBinningFromMode(const int32 binMode)	///< [in] binning mode to ch
     if(binMode == DCAMPROP_BINNING__8 ) return 8 ;
     if(binMode == DCAMPROP_BINNING__16) return 16;
 
-    manage_error( deb, "Incoherent binning mode.", DCAMERR_NONE, "GetBinningFromMode", "binning mode = %d", binMode);
+    manage_error( "Incoherent binning mode.", DCAMERR_NONE, "GetBinningFromMode", "binning mode = %d", binMode);
     THROW_HW_ERROR(Error) << "Incoherent binning mode.";
 }
 
@@ -1064,7 +1064,7 @@ void Camera::initialiseController()
 	err = dcamdev_getcapability( m_camera_handle, &devcap );
 	if( failed(err) )
 	{
-        manage_error( deb, "Failed to get capabilities", err, "dcamdev_getcapability");
+        manage_error( "Failed to get capabilities", err, "dcamdev_getcapability");
         THROW_HW_ERROR(Error) << "Failed to get capabilities";
 	}
 
@@ -1078,7 +1078,7 @@ void Camera::initialiseController()
 
 	    if( !dcamex_getfeatureinq( m_camera_handle, "DCAM_IDPROP_BINNING", DCAM_IDPROP_BINNING, FeatureObj ) )
 	    {
-            manage_error( deb, "Failed to get binning modes");
+            manage_error( "Failed to get binning modes");
             THROW_HW_ERROR(Error) << "Failed to get binning modes";
 	    }
 
@@ -1093,7 +1093,7 @@ void Camera::initialiseController()
 
         if(m_vectBinnings.size() == 0)
         {
-            manage_error( deb, "Failed to get binning modes - none found");
+            manage_error( "Failed to get binning modes - none found");
             THROW_HW_ERROR(Error) << "Failed to get binning modes - none found";
         }
 
@@ -1121,7 +1121,7 @@ void Camera::initialiseController()
     // trigger source
     if( !dcamex_getfeatureinq( m_camera_handle, "DCAM_IDPROP_TRIGGERSOURCE", DCAM_IDPROP_TRIGGERSOURCE, TriggerSourceFeatureObj ) )
     {
-        manage_error( deb, "Failed to get trigger source modes");
+        manage_error( "Failed to get trigger source modes");
         THROW_HW_ERROR(Error) << "Failed to get trigger source modes";
     }
 
@@ -1131,7 +1131,7 @@ void Camera::initialiseController()
     // trigger active
     if( !dcamex_getfeatureinq( m_camera_handle, "DCAM_IDPROP_TRIGGERACTIVE", DCAM_IDPROP_TRIGGERACTIVE, TriggerActiveFeatureObj ) )
     {
-        manage_error( deb, "Failed to get trigger active modes");
+        manage_error( "Failed to get trigger active modes");
         THROW_HW_ERROR(Error) << "Failed to get trigger active modes";
     }
 
@@ -1141,7 +1141,7 @@ void Camera::initialiseController()
     // trigger mode
     if( !dcamex_getfeatureinq( m_camera_handle, "DCAM_IDPROP_TRIGGER_MODE", DCAM_IDPROP_TRIGGER_MODE, TriggerModeFeatureObj ) )
     {
-        manage_error( deb, "Failed to get trigger mode modes");
+        manage_error( "Failed to get trigger mode modes");
         THROW_HW_ERROR(Error) << "Failed to get trigger mode modes";
     }
 
@@ -1205,7 +1205,7 @@ void Camera::initialiseController()
 
 	    if( !dcamex_getfeatureinq( m_camera_handle, "DCAM_IDPROP_EXPOSURETIME", DCAM_IDPROP_EXPOSURETIME, FeatureObj ) )
 	    {
-            manage_error( deb, "Failed to get exposure time");
+            manage_error( "Failed to get exposure time");
             THROW_HW_ERROR(Error) << "Failed to get exposure time";
 	    }
 
@@ -1268,7 +1268,7 @@ void Camera::setReadoutSpeed(const short int readoutSpeed) ///< [in] new readout
 	err = dcamprop_setvalue( m_camera_handle, DCAM_IDPROP_READOUTSPEED, static_cast<double>(readoutSpeed) );
 	if( failed(err) )
 	{
-        manage_error( deb, "Failed to set readout speed", err, 
+        manage_error( "Failed to set readout speed", err, 
                       "dcamprop_setvalue", "IDPROP=DCAM_IDPROP_SUBARRAYVPOS, VALUE=%d",static_cast<int>(readoutSpeed));
         THROW_HW_ERROR(Error) << "Failed to set readout speed";
 	}
@@ -1340,7 +1340,7 @@ void Camera::startAcq()
 
 	if( failed(err) )
 	{
-        manage_error( deb, "Failed to allocate frames for the capture", err, 
+        manage_error( "Failed to allocate frames for the capture", err, 
                       "dcambuf_alloc", "number_of_buffer=%d",number_of_buffer);
         THROW_HW_ERROR(Error) << "Cannot allocate frame for capturing (dcam_allocframe()).";
 	}
@@ -1356,7 +1356,7 @@ void Camera::startAcq()
 	err = dcamcap_status( m_camera_handle, &status );
 	if( failed(err) )
 	{
-        manage_error( deb, "Cannot get camera status", err, "dcamcap_status");
+        manage_error( "Cannot get camera status", err, "dcamcap_status");
         THROW_HW_ERROR(Error) << "Cannot get camera status";
 	}
 
@@ -1498,7 +1498,7 @@ void Camera::CameraThread::checkStatusBeforeCapturing() const
 
     if( failed(err) )
 	{
-        static_manage_error( m_cam, deb, "Cannot get status", err, "dcamcap_status");
+        static_manage_error( m_cam, "Cannot get status", err, "dcamcap_status");
         THROW_HW_ERROR(Error) << "Cannot get status";
 	}
 
@@ -1532,7 +1532,7 @@ void Camera::CameraThread::createWaitHandle(HDCAMWAIT & waitHandle) const
 
 	if( failed(err) )
 	{
-        static_manage_error( m_cam, deb, "Cannot create the wait handle", err, "dcamwait_open");
+        static_manage_error( m_cam, "Cannot create the wait handle", err, "dcamwait_open");
         THROW_HW_ERROR(Error) << "Cannot create the wait handle";
 	}
 	else
@@ -1555,7 +1555,7 @@ void Camera::CameraThread::releaseWaitHandle(HDCAMWAIT & waitHandle) const
 
 	if( failed(err) )
 	{
-        static_manage_error( m_cam, deb, "Cannot release the wait handle", err, "dcamwait_close");
+        static_manage_error( m_cam, "Cannot release the wait handle", err, "dcamwait_close");
 	}
     
     waitHandle = NULL;
@@ -1580,7 +1580,7 @@ void Camera::CameraThread::abortCapture(void)
 
     if( failed(err) )
     {
-        static_manage_error( m_cam, deb, "Cannot abort wait handle.", err, "dcamwait_abort");
+        static_manage_error( m_cam, "Cannot abort wait handle.", err, "dcamwait_abort");
     }
 
 	m_force_stop = true;
@@ -1610,7 +1610,7 @@ void Camera::CameraThread::getTransfertInfo(int32 & frameIndex,
     {
         setStatus(CameraThread::Fault);
 
-        static_manage_error( m_cam, deb, "Cannot get transfer info.", err, "dcamcap_transferinfo");
+        static_manage_error( m_cam, "Cannot get transfer info.", err, "dcamcap_transferinfo");
         THROW_HW_ERROR(Error) << "Cannot get transfer info.";
     }
     else
@@ -1685,7 +1685,7 @@ void Camera::CameraThread::execStartAcq()
     	dcambuf_release  ( m_cam->m_camera_handle ); // Release the capture frame
         setStatus        ( CameraThread::Fault    );
 
-        std::string errorText = static_manage_error( m_cam, deb, "Cannot start the capture", err, "dcamcap_start");
+        std::string errorText = static_manage_error( m_cam, "Cannot start the capture", err, "dcamcap_start");
         REPORT_EVENT(errorText);
         THROW_HW_ERROR(Error) << "Frame capture failed";
 	}
@@ -1744,7 +1744,7 @@ void Camera::CameraThread::execStartAcq()
     	        dcambuf_release  ( m_cam->m_camera_handle ); // Release the capture frame
                 setStatus        ( CameraThread::Fault    );
 
-                std::string errorText = static_manage_error( m_cam, deb, "Error during the frame capture wait", err, "dcamwait_start");
+                std::string errorText = static_manage_error( m_cam, "Error during the frame capture wait", err, "dcamwait_start");
                 REPORT_EVENT(errorText);
 
 				THROW_HW_ERROR(Error) << "DCAMERR_TIMEOUT";
@@ -1752,7 +1752,7 @@ void Camera::CameraThread::execStartAcq()
             else
 			if(( DCAMERR_LOSTFRAME == err) || (DCAMERR_MISSINGFRAME_TROUBLE == err) )
 			{
-                static_manage_error( m_cam, deb, "Error during the frame capture wait", err, "dcamwait_start");
+                static_manage_error( m_cam, "Error during the frame capture wait", err, "dcamwait_start");
 				++m_cam->m_lostFramesCount;
 				continue;
             }
@@ -1763,7 +1763,7 @@ void Camera::CameraThread::execStartAcq()
     	        dcambuf_release  ( m_cam->m_camera_handle ); // Release the capture frame
                 setStatus        ( CameraThread::Fault    );
 
-                std::string errorText = static_manage_error( m_cam, deb, "Error during the frame capture wait", err, "dcamwait_start");
+                std::string errorText = static_manage_error( m_cam, "Error during the frame capture wait", err, "dcamwait_start");
                 REPORT_EVENT(errorText);
                 THROW_HW_ERROR(Error) << "Error during the frame capture wait";
 			}
@@ -1880,7 +1880,7 @@ void Camera::CameraThread::execStartAcq()
         dcambuf_release  ( m_cam->m_camera_handle ); // Release the capture frame
         setStatus        ( CameraThread::Fault    );
 
-        std::string errorText = static_manage_error( m_cam, deb, "Cannot stop acquisition.", err, "dcamcap_stop");
+        std::string errorText = static_manage_error( m_cam, "Cannot stop acquisition.", err, "dcamcap_stop");
         REPORT_EVENT(errorText);
         THROW_HW_ERROR(Error) << "Cannot stop acquisition.";
 	}
@@ -1894,7 +1894,7 @@ void Camera::CameraThread::execStartAcq()
 	if( failed(err) )
 	{
         setStatus(CameraThread::Fault);
-        std::string errorText = static_manage_error( m_cam, deb, "Unable to free capture frame", err, "dcambuf_release");
+        std::string errorText = static_manage_error( m_cam, "Unable to free capture frame", err, "dcambuf_release");
         REPORT_EVENT(errorText);
         THROW_HW_ERROR(Error) << "Unable to free capture frame";
 	}
@@ -1953,7 +1953,7 @@ bool Camera::CameraThread::copyFrames(const int        iFrameBegin, ///< [in] in
 			bImageCopied = false;
             setStatus(CameraThread::Fault);
 
-            std::string errorText = static_manage_error( m_cam, deb, "Unable to lock frame data", err, "dcambuf_lockframe");
+            std::string errorText = static_manage_error( m_cam, "Unable to lock frame data", err, "dcambuf_lockframe");
             REPORT_EVENT(errorText);
             THROW_HW_ERROR(Error) << "Unable to lock frame data";
 	    }
@@ -1965,7 +1965,7 @@ bool Camera::CameraThread::copyFrames(const int        iFrameBegin, ///< [in] in
     		if(sRowbytes * height != memSize)
             {
     			bImageCopied = false;
-                static_manage_trace( m_cam, deb, "Incoherent sizes during frame copy process", DCAMERR_NONE,
+                static_manage_trace( m_cam, "Incoherent sizes during frame copy process", DCAMERR_NONE,
                                      "copyFrames", "source size %d, dest size %d", memSize, sRowbytes * height);
             }
             else
@@ -1985,7 +1985,7 @@ bool Camera::CameraThread::copyFrames(const int        iFrameBegin, ///< [in] in
             setStatus(CameraThread::Fault);
 			CopySuccess = false;
 
-            std::string errorText = static_manage_error( m_cam, deb, "Cannot get image.", DCAMERR_NONE, "copyFrames");
+            std::string errorText = static_manage_error( m_cam, "Cannot get image.", DCAMERR_NONE, "copyFrames");
             REPORT_EVENT(errorText);
             THROW_HW_ERROR(Error) << "Cannot get image.";
 			break;
@@ -2031,7 +2031,7 @@ int Camera::getNumberofViews(void)
 	err = dcamprop_getvalue( m_camera_handle, DCAM_IDPROP_NUMBEROF_VIEW, &v );
     if( failed(err) )
     {
-        manage_trace( deb, "Unable to retrieve the number of possible W-VIEW", err, "dcamprop_getvalue - DCAM_IDPROP_NUMBEROF_VIEW");
+        manage_trace( "Unable to retrieve the number of possible W-VIEW", err, "dcamprop_getvalue - DCAM_IDPROP_NUMBEROF_VIEW");
     }
     else    
     {
@@ -2056,7 +2056,7 @@ int Camera::getMaxNumberofViews(void)
 
     if( !dcamex_getfeatureinq( m_camera_handle, "DCAM_IDPROP_NUMBEROF_VIEW", DCAM_IDPROP_NUMBEROF_VIEW, FeatureObj ) )
     {
-        manage_trace( deb, "Failed to get number of view");
+        manage_trace( "Failed to get number of view");
     }
     else
     {
@@ -2089,7 +2089,7 @@ void Camera::setViewMode(bool in_ViewModeActivated, ///< [in] view mode activati
             // checking if the W-View mode is possible for this camera
 	        if( m_MaxViews < in_ViewsNumber )
             {
-                manage_error( deb, "Unable to activate W-VIEW mode", DCAMERR_NONE, NULL, "max views number %d, needed %d", m_MaxViews, in_ViewsNumber);
+                manage_error( "Unable to activate W-VIEW mode", DCAMERR_NONE, NULL, "max views number %d, needed %d", m_MaxViews, in_ViewsNumber);
                 THROW_HW_ERROR(Error) << "Unable to activate W-VIEW mode";
             }
 
@@ -2098,7 +2098,7 @@ void Camera::setViewMode(bool in_ViewModeActivated, ///< [in] view mode activati
 
             if( failed(err) )
 		    {
-                manage_error( deb, "Unable to activate W-VIEW mode", err, 
+                manage_error( "Unable to activate W-VIEW mode", err, 
                                    "dcamprop_setvalue", "DCAM_IDPROP_SENSORMODE - DCAMPROP_SENSORMODE__SPLITVIEW");
                 THROW_HW_ERROR(Error) << "Unable to activate W-VIEW mode";
 		    }
@@ -2106,12 +2106,12 @@ void Camera::setViewMode(bool in_ViewModeActivated, ///< [in] view mode activati
             m_ViewModeEnabled = true          ; // W-View mode with splitting image
             m_ViewNumber      = in_ViewsNumber; // number of W-Views
 
-            manage_trace( deb, "W-VIEW mode activated", DCAMERR_NONE, NULL, "views number %d", in_ViewsNumber);
+            manage_trace( "W-VIEW mode activated", DCAMERR_NONE, NULL, "views number %d", in_ViewsNumber);
         }
         else
         // W-View is not supported for this camera
         {
-            manage_error( deb, "Cannot set the W-View mode - This camera does not support the W-View mode.", DCAMERR_NONE);
+            manage_error( "Cannot set the W-View mode - This camera does not support the W-View mode.", DCAMERR_NONE);
             THROW_HW_ERROR(Error) << "Cannot set the W-View mode - This camera does not support the W-View mode.";
         }
     }
@@ -2123,7 +2123,7 @@ void Camera::setViewMode(bool in_ViewModeActivated, ///< [in] view mode activati
 
         if( failed(err) )
 		{
-            manage_error( deb, "Unable to activate AREA mode", err, 
+            manage_error( "Unable to activate AREA mode", err, 
                                "dcamprop_setvalue", "DCAM_IDPROP_SENSORMODE - DCAMPROP_SENSORMODE__AREA");
             THROW_HW_ERROR(Error) << "Unable to activate AREA mode";
 		}
@@ -2137,7 +2137,7 @@ void Camera::setViewMode(bool in_ViewModeActivated, ///< [in] view mode activati
         m_ViewModeEnabled = false; // W-View mode with splitting image
         m_ViewNumber      = 0    ; // number of W-Views
 
-        manage_trace( deb, "W-VIEW mode unactivated");
+        manage_trace( "W-VIEW mode unactivated");
     }
 }
 
@@ -2165,7 +2165,7 @@ void Camera::getViewMode(bool& flag)
 
     if( failed(err) )
     {
-        manage_error( deb, "Cannot get sensor mode", err, 
+        manage_error( "Cannot get sensor mode", err, 
                       "dcamprop_getvalue", "IDPROP=DCAM_IDPROP_SENSORMODE");
         THROW_HW_ERROR(Error) << "Cannot get sensor mode";
     }
@@ -2187,7 +2187,7 @@ void Camera::setViewExpTime(int    ViewIndex, ///< [in] view index [0...m_MaxVie
     // W-View is not supported for this camera
     if(m_MaxViews < 2)
     {
-        manage_error( deb, "Cannot set view exposure time - This camera does not support the W-View mode.", DCAMERR_NONE);
+        manage_error( "Cannot set view exposure time - This camera does not support the W-View mode.", DCAMERR_NONE);
         THROW_HW_ERROR(Error) << "Cannot set view exposure time - This camera does not support the W-View mode.";
     }
     else
@@ -2196,7 +2196,7 @@ void Camera::setViewExpTime(int    ViewIndex, ///< [in] view index [0...m_MaxVie
         // Changing a View exposure time is not allowed if W-VIEW mode is not activated but we keep the value
         if(!m_ViewModeEnabled)
         {
-            manage_error( deb, "Cannot change W-View exposure time when W-VIEW mode is unactivated!", DCAMERR_NONE, "setViewExpTime");
+            manage_error( "Cannot change W-View exposure time when W-VIEW mode is unactivated!", DCAMERR_NONE, "setViewExpTime");
         }
         else
         {
@@ -2205,21 +2205,21 @@ void Camera::setViewExpTime(int    ViewIndex, ///< [in] view index [0...m_MaxVie
 
             if( failed(err) )
             {
-                manage_error( deb, "Cannot set view exposure time", err, 
+                manage_error( "Cannot set view exposure time", err, 
                               "dcamprop_setvalue", "IDPROP=DCAM_IDPROP_EXPOSURETIME, VIEW INDEX=%d, VALUE=%lf", ViewIndex, exp_time);
                 THROW_HW_ERROR(Error) << "Cannot set view exposure time";
             }
 
             double tempexp_time;
             getViewExpTime(ViewIndex, tempexp_time);
-            manage_trace( deb, "Changed View Exposure time", DCAMERR_NONE, NULL, "views index %d, exp:%lf >> real:%lf", ViewIndex, exp_time, tempexp_time);
+            manage_trace( "Changed View Exposure time", DCAMERR_NONE, NULL, "views index %d, exp:%lf >> real:%lf", ViewIndex, exp_time, tempexp_time);
         }
 
         m_ViewExpTime[ViewIndex] = exp_time;
     }
     else
     {
-        manage_error( deb, "Cannot set view exposure time", DCAMERR_NONE, 
+        manage_error( "Cannot set view exposure time", DCAMERR_NONE, 
                       "", "VIEW INDEX=%d, MAX VIEWS=%d", ViewIndex, m_MaxViews);
         THROW_HW_ERROR(Error) << "Cannot set view exposure time";
     }
@@ -2257,7 +2257,7 @@ void Camera::getViewExpTime(int      ViewIndex, ///< [in] view index [0...m_MaxV
 
 	        if( failed(err) )
 	        {
-                manage_error( deb, "Cannot get view exposure time", err, 
+                manage_error( "Cannot get view exposure time", err, 
                               "dcamprop_getvalue", "IDPROP=DCAM_IDPROP_EXPOSURETIME, VIEW INDEX=%d", ViewIndex);
                 THROW_HW_ERROR(Error) << "Cannot get view exposure time";
 	        }
@@ -2267,7 +2267,7 @@ void Camera::getViewExpTime(int      ViewIndex, ///< [in] view index [0...m_MaxV
     }
     else
     {
-        manage_error( deb, "Cannot get view exposure time", DCAMERR_NONE, 
+        manage_error( "Cannot get view exposure time", DCAMERR_NONE, 
                       "", "VIEW INDEX=%d, MAX VIEWS=%d", ViewIndex, m_MaxViews);
         THROW_HW_ERROR(Error) << "Cannot get view exposure time";
     }
@@ -2355,7 +2355,7 @@ void Camera::setSyncReadoutBlankMode(enum SyncReadOut_BlankMode in_SyncReadOutMo
     }
     else
 	{
-        manage_error( deb, "Unable to set the SyncReadout blank mode", DCAMERR_NONE, 
+        manage_error( "Unable to set the SyncReadout blank mode", DCAMERR_NONE, 
                            "", "in_SyncReadOutMode is unknown %d", static_cast<int>(in_SyncReadOutMode));
         THROW_HW_ERROR(Error) << "Unable to set the SyncReadout blank mode";
 	}
@@ -2367,12 +2367,12 @@ void Camera::setSyncReadoutBlankMode(enum SyncReadOut_BlankMode in_SyncReadOutMo
 	{
         if((err == DCAMERR_INVALIDPROPERTYID)||(err == DCAMERR_NOTSUPPORT))
         {
-            manage_trace( deb, "Unable to set the SyncReadout blank mode", err, 
+            manage_trace( "Unable to set the SyncReadout blank mode", err, 
                                "dcamprop_setvalue", "DCAM_IDPROP_SYNCREADOUT_SYSTEMBLANK %d", mode);
         }
         else
         {
-            manage_error( deb, "Unable to set the SyncReadout blank mode", err, 
+            manage_error( "Unable to set the SyncReadout blank mode", err, 
                                "dcamprop_setvalue", "DCAM_IDPROP_SYNCREADOUT_SYSTEMBLANK %d", mode);
             THROW_HW_ERROR(Error) << "Unable to set the SyncReadout blank mode";
         }
@@ -2431,12 +2431,12 @@ double Camera::getSensorTemperature(bool & out_NotSupported)
 	{
         if((err == DCAMERR_INVALIDPROPERTYID)||(err == DCAMERR_NOTSUPPORT))
         {
-            manage_trace( deb, "Unable to retrieve the sensor temperature", err, "dcamprop_getvalue - DCAM_IDPROP_SENSORTEMPERATURE");
+            manage_trace( "Unable to retrieve the sensor temperature", err, "dcamprop_getvalue - DCAM_IDPROP_SENSORTEMPERATURE");
             out_NotSupported = true;
         }
         else
         {
-            manage_trace( deb, "Unable to retrieve the sensor temperature", err, "dcamprop_getvalue - DCAM_IDPROP_SENSORTEMPERATURE");
+            manage_trace( "Unable to retrieve the sensor temperature", err, "dcamprop_getvalue - DCAM_IDPROP_SENSORTEMPERATURE");
             THROW_HW_ERROR(Error) << "Unable to retrieve the sensor temperature";
         }
     }    

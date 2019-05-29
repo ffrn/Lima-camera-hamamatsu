@@ -120,8 +120,7 @@ string Camera::dcam_get_string( HDCAM hdcam ,       ///< [in] camera handle
 @return none
 */
 //-----------------------------------------------------------------------------
-void Camera::manage_trace( DebObj     & deb       ,       ///< [in] trace object
-                           const char * optDesc   ,       ///< [in] optional description (NULL if not used)
+void Camera::manage_trace( const char * optDesc   ,       ///< [in] optional description (NULL if not used)
                            int32        idStr     ,       ///< [in] error string identifier (DCAMERR_NONE if no hdcam error to trace)
                            const char * fct       ,       ///< [in] function name which returned the error (NULL if not used)
                            const char * opt  , ...) const ///< [in] optional string to concat to the error string (NULL if not used)
@@ -129,7 +128,7 @@ void Camera::manage_trace( DebObj     & deb       ,       ///< [in] trace object
     va_list args(NULL);
 
     va_start(args, opt);
-    static_trace_string_va_list( this, deb, optDesc, idStr, fct, opt, args, false);
+    static_trace_string_va_list( this, optDesc, idStr, fct, opt, args, false);
     va_end(args);
 }
 
@@ -142,7 +141,6 @@ void Camera::manage_trace( DebObj     & deb       ,       ///< [in] trace object
 */
 //-----------------------------------------------------------------------------
 void Camera::static_manage_trace( const Camera     * const cam,      ///< [in] camera object
-                                  DebObj           & deb      ,      ///< [in] trace object
                                   const char       * optDesc  ,      ///< [in] optional description (NULL if not used)
                                   int32              idStr    ,      ///< [in] error string identifier (DCAMERR_NONE if no hdcam error to trace)
                                   const char       * fct      ,      ///< [in] function name which returned the error (NULL if not used)
@@ -151,7 +149,7 @@ void Camera::static_manage_trace( const Camera     * const cam,      ///< [in] c
     va_list args(NULL);
 
     va_start(args, opt);
-    static_trace_string_va_list( cam, deb, optDesc, idStr, fct, opt, args, false);
+    static_trace_string_va_list( cam, optDesc, idStr, fct, opt, args, false);
     va_end(args);
 }
 
@@ -163,8 +161,7 @@ void Camera::static_manage_trace( const Camera     * const cam,      ///< [in] c
 @return none
 */
 //-----------------------------------------------------------------------------
-void Camera::manage_error( DebObj     & deb       ,       ///< [in] trace object
-                           const char * optDesc   ,       ///< [in] optional description (NULL if not used)
+void Camera::manage_error( const char * optDesc   ,       ///< [in] optional description (NULL if not used)
                            int32        idStr     ,       ///< [in] error string identifier (DCAMERR_NONE if no hdcam error to trace)
                            const char * fct       ,       ///< [in] function name which returned the error (NULL if not used)
                            const char * opt  , ...) const ///< [in] optional string to concat to the error string (NULL if not used)
@@ -172,7 +169,7 @@ void Camera::manage_error( DebObj     & deb       ,       ///< [in] trace object
     va_list args(NULL);
 
     va_start(args, opt);
-    static_trace_string_va_list( this, deb, optDesc, idStr, fct, opt, args, true);
+    static_trace_string_va_list( this, optDesc, idStr, fct, opt, args, true);
     va_end(args);
 }
 
@@ -185,7 +182,6 @@ void Camera::manage_error( DebObj     & deb       ,       ///< [in] trace object
 */
 //-----------------------------------------------------------------------------
 std::string Camera::static_manage_error( const Camera     * const cam,      ///< [in] camera object
-                                         DebObj           & deb      ,      ///< [in] trace object
                                          const char       * optDesc  ,      ///< [in] optional description (NULL if not used)
                                          int32              idStr    ,      ///< [in] error string identifier (DCAMERR_NONE if no hdcam error to trace)
                                          const char       * fct      ,      ///< [in] function name which returned the error (NULL if not used)
@@ -195,7 +191,7 @@ std::string Camera::static_manage_error( const Camera     * const cam,      ///<
     std::string FinalText ;
 
     va_start(args, opt);
-    FinalText = static_trace_string_va_list( cam, deb, optDesc, idStr, fct, opt, args, true);
+    FinalText = static_trace_string_va_list( cam, optDesc, idStr, fct, opt, args, true);
     va_end(args);
     
     return FinalText;
@@ -210,7 +206,6 @@ std::string Camera::static_manage_error( const Camera     * const cam,      ///<
 */
 //-----------------------------------------------------------------------------
 std::string Camera::static_trace_string_va_list( const Camera     * const cam, ///< [in] camera object
-                                          DebObj           & deb      , ///< [in] trace object
                                           const char       * optDesc  , ///< [in] optional description (NULL if not used)
                                           int32              idStr    , ///< [in] error string identifier (DCAMERR_NONE if no hdcam error to trace)
                                           const char       * fct      , ///< [in] function name which returned the error (NULL if not used)
@@ -423,7 +418,7 @@ bool Camera::dcamex_setsubarrayrect( HDCAM hdcam    , ///< [in] camera handle
 	err = dcamprop_setvalue( hdcam, DCAM_IDPROP_SUBARRAYMODE, static_cast<double>(DCAMPROP_MODE__OFF) );
     if( failed(err) )
 	{
-        manage_error( deb, "Error in dcamex_setsubarrayrect", err, "dcamprop_setvalue()", "IDPROP=SUBARRAYMODE, VALUE=OFF");
+        manage_error( "Error in dcamex_setsubarrayrect", err, "dcamprop_setvalue()", "IDPROP=SUBARRAYMODE, VALUE=OFF");
 		return false;
 	}
 
@@ -431,7 +426,7 @@ bool Camera::dcamex_setsubarrayrect( HDCAM hdcam    , ///< [in] camera handle
 	err = dcamprop_setvalue( hdcam, DCAM_IDPROP_SUBARRAYHSIZE, static_cast<double>(width) );
 	if( failed(err) )
 	{
-        manage_error( deb, "Error in dcamex_setsubarrayrect", err, "dcamprop_setvalue()", "IDPROP=SUBARRAYHSIZE, VALUE=%d", width);
+        manage_error( "Error in dcamex_setsubarrayrect", err, "dcamprop_setvalue()", "IDPROP=SUBARRAYHSIZE, VALUE=%d", width);
 		return false;
 	}
 
@@ -447,7 +442,7 @@ bool Camera::dcamex_setsubarrayrect( HDCAM hdcam    , ///< [in] camera handle
 
 	if( failed(err) )
 	{
-        manage_error( deb, "Error in dcamex_setsubarrayrect", err, "dcamprop_setvalue()", "IDPROP=SUBARRAYHPOS, VALUE=%d", left );
+        manage_error( "Error in dcamex_setsubarrayrect", err, "dcamprop_setvalue()", "IDPROP=SUBARRAYHPOS, VALUE=%d", left );
 		return false;
 	}
 
@@ -455,7 +450,7 @@ bool Camera::dcamex_setsubarrayrect( HDCAM hdcam    , ///< [in] camera handle
 	err = dcamprop_setvalue( hdcam, DCAM_IDPROP_SUBARRAYVSIZE, static_cast<double>(height) );
 	if( failed(err) )
 	{
-        manage_error( deb, "Error in dcamex_setsubarrayrect", err, "dcamprop_setvalue()", "IDPROP=SUBARRAYVSIZE, VALUE=%d",height );
+        manage_error( "Error in dcamex_setsubarrayrect", err, "dcamprop_setvalue()", "IDPROP=SUBARRAYVSIZE, VALUE=%d",height );
 		return false;
 	}
 
@@ -471,7 +466,7 @@ bool Camera::dcamex_setsubarrayrect( HDCAM hdcam    , ///< [in] camera handle
 
 	if( failed(err) )
 	{
-        manage_error( deb, "Error in dcamex_setsubarrayrect", err, "dcamprop_setvalue()", "IDPROP=SUBARRAYVPOS, VALUE=%d",top );
+        manage_error( "Error in dcamex_setsubarrayrect", err, "dcamprop_setvalue()", "IDPROP=SUBARRAYVPOS, VALUE=%d",top );
 		return false;
 	}
     
@@ -479,7 +474,7 @@ bool Camera::dcamex_setsubarrayrect( HDCAM hdcam    , ///< [in] camera handle
 	err = dcamprop_setvalue( hdcam, DCAM_IDPROP_SUBARRAYMODE, static_cast<double>(DCAMPROP_MODE__ON) );
 	if( failed(err) )
 	{
-        manage_error( deb, "Error in dcamex_setsubarrayrect", err, "dcamprop_setvalue()", "IDPROP=SUBARRAYMODE, VALUE=ON" );
+        manage_error( "Error in dcamex_setsubarrayrect", err, "dcamprop_setvalue()", "IDPROP=SUBARRAYMODE, VALUE=ON" );
 		return false;
 	}
     
@@ -508,7 +503,7 @@ bool Camera::dcamex_getsubarrayrect( HDCAM   hdcam    , ///< [in] camera handle
 	err = dcamprop_getvalue( hdcam, DCAM_IDPROP_SUBARRAYHSIZE, &GenericValue );
 	if( failed(err) )
 	{
-        manage_error( deb, "Error in dcamex_getsubarrayrect", err, "dcamprop_getvalue()", "IDPROP=SUBARRAYHSIZE" );
+        manage_error( "Error in dcamex_getsubarrayrect", err, "dcamprop_getvalue()", "IDPROP=SUBARRAYHSIZE" );
 		return false;
 	}
     else
@@ -528,7 +523,7 @@ bool Camera::dcamex_getsubarrayrect( HDCAM   hdcam    , ///< [in] camera handle
 
 	if( failed(err) )
 	{
-        manage_error( deb, "Error in dcamex_getsubarrayrect", err, "dcamprop_getvalue()", "IDPROP=SUBARRAYHPOS");
+        manage_error( "Error in dcamex_getsubarrayrect", err, "dcamprop_getvalue()", "IDPROP=SUBARRAYHPOS");
 		return false;
 	}
     else
@@ -540,7 +535,7 @@ bool Camera::dcamex_getsubarrayrect( HDCAM   hdcam    , ///< [in] camera handle
 	err = dcamprop_getvalue( hdcam, DCAM_IDPROP_SUBARRAYVSIZE, &GenericValue );
 	if( failed(err) )
 	{
-        manage_error( deb, "Error in dcamex_getsubarrayrect", err, "dcamprop_getvalue()", "IDPROP=SUBARRAYVSIZE");
+        manage_error( "Error in dcamex_getsubarrayrect", err, "dcamprop_getvalue()", "IDPROP=SUBARRAYVSIZE");
 		return false;
 	}
     else
@@ -560,7 +555,7 @@ bool Camera::dcamex_getsubarrayrect( HDCAM   hdcam    , ///< [in] camera handle
 
 	if( failed(err) )
 	{
-        manage_error( deb, "Error in dcamex_getsubarrayrect", err, "dcamprop_getvalue()", "IDPROP=SUBARRAYVPOS");
+        manage_error( "Error in dcamex_getsubarrayrect", err, "dcamprop_getvalue()", "IDPROP=SUBARRAYVPOS");
 		return false;
 	}
     else
@@ -588,7 +583,7 @@ long Camera::dcamex_getimagewidth(const HDCAM hdcam ) ///< [in] camera handle
 	err = dcamprop_getvalue( hdcam, DCAM_IDPROP_IMAGE_WIDTH, &GenericValue );
     if( failed(err) )
 	{
-        manage_error( deb, "Error in dcamex_getimagewidth", err, "dcamprop_getvalue()", "IDPROP=DCAM_IDPROP_IMAGE_WIDTH");
+        manage_error( "Error in dcamex_getimagewidth", err, "dcamprop_getvalue()", "IDPROP=DCAM_IDPROP_IMAGE_WIDTH");
 		return 0;
 	}
 	else
@@ -614,7 +609,7 @@ long Camera::dcamex_getimageheight(const HDCAM hdcam ) ///< [in] camera handle
 	err = dcamprop_getvalue( hdcam, DCAM_IDPROP_IMAGE_HEIGHT, &GenericValue );
 	if( failed(err) )
 	{
-        manage_error( deb, "Error in dcamex_getimageheight", err, "dcamprop_getvalue()", "IDPROP=DCAM_IDPROP_IMAGE_HEIGHT");
+        manage_error( "Error in dcamex_getimageheight", err, "dcamprop_getvalue()", "IDPROP=DCAM_IDPROP_IMAGE_HEIGHT");
 		return 0;
 	}
 	else
@@ -641,7 +636,7 @@ long Camera::dcamex_getbitsperchannel( HDCAM hdcam )    ///< [in] camera handle
 
 	if( failed(err) )
 	{
-        manage_error( deb, "Error in dcamex_getbitsperchannel", err, "dcamprop_getvalue()", "IDPROP=DCAM_IDPROP_IMAGE_PIXELTYPE");
+        manage_error( "Error in dcamex_getbitsperchannel", err, "dcamprop_getvalue()", "IDPROP=DCAM_IDPROP_IMAGE_PIXELTYPE");
 	}
     else
     {
@@ -692,7 +687,7 @@ bool Camera::dcamex_getfeatureinq( HDCAM          hdcam      ,       ///< [in ] 
 
 	if( failed(err) )
 	{
-        manage_error( deb, "Error in dcamex_getfeatureinq", err,  "dcamprop_getattr()", "IDPROP=0x%08x", idfeature);
+        manage_error( "Error in dcamex_getfeatureinq", err,  "dcamprop_getattr()", "IDPROP=0x%08x", idfeature);
 		return false;
 	}
 
@@ -729,7 +724,7 @@ bool Camera::dcamex_getfeatureinq( HDCAM          hdcam      ,       ///< [in ] 
     {
         if(!dcamex_getpropertyvalues( hdcam, attr, FeatureObj.m_vectValues))
         {
-            manage_error( deb, "Error in dcamex_getfeatureinq", DCAMERR_NONE,  "dcamex_getpropertyvalues()", "IDPROP=0x%08x", idfeature);
+            manage_error( "Error in dcamex_getfeatureinq", DCAMERR_NONE,  "dcamex_getpropertyvalues()", "IDPROP=0x%08x", idfeature);
     		return false; // error is also managed by the dcamex_getpropertyvalues method.
         }
     }
@@ -739,7 +734,7 @@ bool Camera::dcamex_getfeatureinq( HDCAM          hdcam      ,       ///< [in ] 
     {
         if(!dcamex_getmodevalues( hdcam, attr, FeatureObj.m_vectModeLabels, FeatureObj.m_vectModeValues))
         {
-            manage_error( deb, "Error in dcamex_getfeatureinq", DCAMERR_NONE,  "dcamex_getmodevalues()", "IDPROP=0x%08x", idfeature);
+            manage_error( "Error in dcamex_getfeatureinq", DCAMERR_NONE,  "dcamex_getmodevalues()", "IDPROP=0x%08x", idfeature);
     		return false; // error is also managed by the dcamex_getpropertyvalues method.
         }
     }
@@ -774,7 +769,7 @@ bool Camera::dcamex_getpropertyvalues( HDCAM            hdcam     ,       ///< [
 	{
 		int32 nArray = (int32)v;
 
-        manage_trace( deb, "dcamex_getpropertyvalues", DCAMERR_NONE, "dcamprop_getvalue()", "Number of elements %d for property 0x%08x", nArray, attr.iProp);
+        manage_trace( "dcamex_getpropertyvalues", DCAMERR_NONE, "dcamprop_getvalue()", "Number of elements %d for property 0x%08x", nArray, attr.iProp);
 
 		for( elementIndex = 1; elementIndex < nArray; elementIndex++ )
 		{
@@ -784,7 +779,7 @@ bool Camera::dcamex_getpropertyvalues( HDCAM            hdcam     ,       ///< [
 
 			if( failed(err) )
 			{
-                manage_error( deb, "Error in dcamex_getpropertyvalues", err, "dcamprop_getname()", "IDPROP=0x%08x", iProp);
+                manage_error( "Error in dcamex_getpropertyvalues", err, "dcamprop_getname()", "IDPROP=0x%08x", iProp);
         		result = false;
 			}
             else
@@ -793,20 +788,20 @@ bool Camera::dcamex_getpropertyvalues( HDCAM            hdcam     ,       ///< [
 
 			    if( failed(err) )
 			    {
-                    manage_error( deb, "Error in dcamex_getpropertyvalues", err, "dcamprop_getvalue()", "IDPROP=0x%08x", iProp);
+                    manage_error( "Error in dcamex_getpropertyvalues", err, "dcamprop_getvalue()", "IDPROP=0x%08x", iProp);
         		    result = false;
 			    }
                 else
                 {
                     vectValues.push_back(v); // add the value to the container
-                    manage_trace( deb, "dcamex_getpropertyvalues", DCAMERR_NONE, NULL, "value : %lf - %s", v, text);
+                    manage_trace( "dcamex_getpropertyvalues", DCAMERR_NONE, NULL, "value : %lf - %s", v, text);
                 }
             }
 		}
 	}
     else
 	{
-        manage_error( deb, "Error in dcamex_getpropertyvalues", err, "dcamprop_getvalue()", "IDPROP=0x%08x", iProp);
+        manage_error( "Error in dcamex_getpropertyvalues", err, "dcamprop_getvalue()", "IDPROP=0x%08x", iProp);
 		result = false;
 	}
 
@@ -853,7 +848,7 @@ bool Camera::dcamex_getmodevalues( HDCAM            hdcam     ,       ///< [in] 
         }
         else
         {
-            manage_error( deb, "Error in dcamex_getmodevalues", err, 
+            manage_error( "Error in dcamex_getmodevalues", err, 
                           "dcamprop_getvaluetext()", "IDPROP=0x%08x, index:%d", iProp, pv_index);
             return false;
 		}
@@ -888,7 +883,7 @@ void Camera::traceFeatureGeneralInformations( HDCAM          hdcam      ,       
     if( !dcamex_getfeatureinq( hdcam, featurename, idfeature, *OptFeature ) )
     {
         string txt = "Failed to get " + featurename;
-        manage_error( deb, txt.c_str());
+        manage_error( txt.c_str());
         THROW_HW_ERROR(Error) << txt.c_str();
     }
 
@@ -1037,7 +1032,7 @@ void Camera::TraceTriggerData() const
     err = dcamprop_getvalue( m_camera_handle, DCAM_IDPROP_TRIGGERSOURCE, &temp);
     if( failed(err) )
     {
-        manage_error( deb, "Cannot get trigger option", err, 
+        manage_error( "Cannot get trigger option", err, 
                       "dcamprop_getvalue", "IDPROP=DCAM_IDPROP_TRIGGERSOURCE");
         THROW_HW_ERROR(Error) << "Cannot get trigger option";
     }
@@ -1047,7 +1042,7 @@ void Camera::TraceTriggerData() const
     err = dcamprop_getvalue( m_camera_handle, DCAM_IDPROP_TRIGGERACTIVE, &temp);
     if( failed(err) )
     {
-        manage_error( deb, "Cannot set trigger option", err, 
+        manage_error( "Cannot set trigger option", err, 
                       "dcamprop_getvalue", "IDPROP=DCAM_IDPROP_TRIGGERACTIVE");
         THROW_HW_ERROR(Error) << "Cannot get trigger option";
     }
@@ -1057,7 +1052,7 @@ void Camera::TraceTriggerData() const
     err = dcamprop_getvalue( m_camera_handle, DCAM_IDPROP_TRIGGER_MODE, &temp);
     if( failed(err) )
     {
-        manage_error( deb, "Cannot set trigger option", err, 
+        manage_error( "Cannot set trigger option", err, 
                       "dcamprop_getvalue", "IDPROP=DCAM_IDPROP_TRIGGER_MODE");
         THROW_HW_ERROR(Error) << "Cannot get trigger option";
     }
@@ -1067,7 +1062,7 @@ void Camera::TraceTriggerData() const
     err = dcamprop_getvalue( m_camera_handle, DCAM_IDPROP_TRIGGERPOLARITY, &temp);
     if( failed(err) )
     {
-        manage_error( deb, "Cannot set trigger polarity", err, 
+        manage_error( "Cannot set trigger polarity", err, 
                       "dcamprop_getvalue", "IDPROP=DCAM_IDPROP_TRIGGERPOLARITY");
         THROW_HW_ERROR(Error) << "Cannot get trigger option";
     }
@@ -1129,7 +1124,7 @@ void Camera::setTriggerPolarity(enum Trigger_Polarity in_TriggerPolarity) const 
     }
     else
 	{
-        manage_error( deb, "Unable to set the trigger polarity", DCAMERR_NONE, 
+        manage_error( "Unable to set the trigger polarity", DCAMERR_NONE, 
                            "", "in_TriggerPolarity is unknown %d", static_cast<int>(in_TriggerPolarity));
         THROW_HW_ERROR(Error) << "Unable to set the trigger polarity";
 	}
@@ -1141,18 +1136,18 @@ void Camera::setTriggerPolarity(enum Trigger_Polarity in_TriggerPolarity) const 
 	{
         if((err == DCAMERR_INVALIDPROPERTYID)||(err == DCAMERR_NOTSUPPORT))
         {
-            manage_trace( deb, "Unable to set the SyncReadout blank mode", err, 
+            manage_trace( "Unable to set the SyncReadout blank mode", err, 
                                "dcamprop_setvalue", "DCAM_IDPROP_SYNCREADOUT_SYSTEMBLANK %d", mode);
         }
         else
         {
-            manage_error( deb, "Unable to set the trigger polarity", err, 
+            manage_error( "Unable to set the trigger polarity", err, 
                                "dcamprop_setvalue", "DCAM_IDPROP_TRIGGERPOLARITY %d", mode);
             THROW_HW_ERROR(Error) << "Unable to set the trigger polarity";
         }
 	}
     else
     {
-        manage_trace( deb, "Set the trigger polarity", DCAMERR_NONE, NULL, "Polarity : %s", txtmode.c_str());
+        manage_trace( "Set the trigger polarity", DCAMERR_NONE, NULL, "Polarity : %s", txtmode.c_str());
     }
 }
