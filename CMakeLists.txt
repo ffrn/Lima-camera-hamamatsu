@@ -24,7 +24,71 @@
 
 #HAVE TO BE UNDER WINDOWS
 if(WIN32)
-	set(NAME "hamamatsu")
+  cmake_minimum_required(VERSION 3.1)
+
+  project(hamamatsu)
+  
+	set(NAME "hamamatsu") # This is used by LimaTools
+
+# Include additional modules that are used inconditionnaly
+include(GNUInstallDirs)
+include(GenerateExportHeader)
+
+# If conda build, always set lib dir to 'lib'
+if($ENV{CONDA_BUILD})
+  set(CMAKE_INSTALL_LIBDIR "lib")
+endif()
+
+# Set lower / upper case project names
+string(TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)
+string(TOLOWER "${PROJECT_NAME}" PROJECT_NAME_LOWER)
+
+# Set targets export name (used by lima and dependencies)
+set(TARGETS_EXPORT_NAME "${PROJECT_NAME_LOWER}-targets")
+#set(namespace "${PROJECT_NAME}::")
+
+# Check if project is being used directly or via add_subdirectory
+set(CAMERA_MASTER_PROJECT OFF)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+  set(CAMERA_MASTER_PROJECT ON)
+endif()
+
+if (CAMERA_MASTER_PROJECT)
+  find_package(Lima REQUIRED)
+endif()
+
+# CMake additional macros
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${LIMA_CMAKE_INCLUDE_DIRS} ${CMAKE_MODULE_PATH})
+
+# Set version
+# include(project_version)
+
+# Enable python binding code compilation using sip generator
+if (CAMERA_MASTER_PROJECT)
+  option(LIMA_ENABLE_PYTHON "compile python binding code?" OFF)
+endif()
+
+if (LIMA_ENABLE_PYTHON)
+  # Find python interpreter and libs
+  find_package(PythonInterp)
+  find_package(PythonLibs)
+  if(${PYTHONINTERP_FOUND})
+    # python site-packages folder
+    execute_process(
+      COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())"
+      OUTPUT_VARIABLE _PYTHON_SITE_PACKAGES_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+  endif()
+
+  set(PYTHON_SITE_PACKAGES_DIR ${_PYTHON_SITE_PACKAGES_DIR} CACHE PATH "where should python modules be installed?")
+
+  find_package(SIP REQUIRED)
+  set(SIP_TAGS WIN32_PLATFORM)
+  set(SIP_EXTRA_OPTIONS -e -g)
+
+  find_package(NumPy REQUIRED)
+endif()
+
+file(GLOB_RECURSE HAMAMATSU_INCS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
 	#SOURCEs
 	set(${NAME}_srcs src/HamamatsuInterface.cpp src/HamamatsuCamera.cpp
@@ -32,37 +96,87 @@ if(WIN32)
 		src/HamamatsuDetInfoCtrlObj.cpp src/HamamatsuRoiCtrlObj.cpp
 		src/HamamatsuSyncCtrlObj.cpp)
 	
-	add_library(lima${NAME} SHARED ${${NAME}_srcs})
+  add_library(${NAME} SHARED ${${NAME}_srcs} ${HAMAMATSU_INCS})
+
+# Generate export macros
+generate_export_header(${NAME})
+
+# Set version and output name
+set_target_properties(${NAME} PROPERTIES
+  OUTPUT_NAME "lima${PROJECT_NAME_LOWER}"
+  VERSION "${PROJECT_VERSION}"
+  SOVERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}")
 	
 	#INCLUDES
-	target_include_directories(lima${NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-	target_include_directories(lima${NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/sdk/msvc/include")
-	target_include_directories(lima${NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/sdk/msvc/include/legacy")
+	target_include_directories(${NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+	target_include_directories(${NAME} PUBLIC "${CMAKE_PREFIX_PATH}/dcamsdk4/inc")
+	target_include_directories(${NAME} PUBLIC "${CMAKE_PREFIX_PATH}/dcimgsdk/inc")
 
-	target_compile_definitions(lima${NAME} PRIVATE LIBHAMAMATSU_EXPORTS)
+	target_compile_definitions(${NAME} PRIVATE LIBHAMAMATSU_EXPORTS)
 	
 	#LIBRARIES
-	find_library(HAMAMATSU_DCAMAPI_LIB dcamapi "{CMAKE_CURRENT_SOURCE_DIR}/sdk/msvc/bin")
+	find_library(HAMAMATSU_DCAMAPI_LIB dcamapi "${CMAKE_PREFIX_PATH}/dcamsdk4/lib/win64")
 	if("${HAMAMATSU_DCAMAPI_LIB}" STREQUAL "HAMAMATSU_DCAMAPI_LIB-NOTFOUND")
 	  message(FATAL_ERROR "${NAME} : dcamapi.lib not found, you can search it in cmake-gui or try to install it if it isn't here.")
 	endif()
-	find_library(HAMAMATSU_DCIMGAPI_LIB dcimgapi "{CMAKE_CURRENT_SOURCE_DIR}/sdk/msvc/bin")
+	find_library(HAMAMATSU_DCIMGAPI_LIB dcimgapi "${CMAKE_PREFIX_PATH}/dcimgsdk/lib/win64")
 	if("${HAMAMATSU_DCIMGAPI_LIB}" STREQUAL "HAMAMATSU_DCIMGAPI_LIB-NOTFOUND")
 	  message(FATAL_ERROR "${NAME} : dcimgapi.lib not found, you can search it in cmake-gui or try to install it if it isn't here.")
 	endif()
 	
-	target_link_libraries(lima${NAME} limacore)
-	target_link_libraries(lima${NAME} ${HAMAMATSU_DCAMAPI_LIB})
-	target_link_libraries(lima${NAME} ${HAMAMATSU_DCIMGAPI_LIB})
+	target_link_libraries(${NAME} limacore)
+	target_link_libraries(${NAME} ${HAMAMATSU_DCAMAPI_LIB})
+	target_link_libraries(${NAME} ${HAMAMATSU_DCIMGAPI_LIB})
 
-	limatools_set_library_soversion(lima${NAME} "VERSION")
-    set_target_properties(lima${NAME} PROPERTIES PREFIX "lib")
-    install(TARGETS lima${NAME} DESTINATION lib)
+  target_compile_definitions(${NAME}
+    PRIVATE ${NAME}_EXPORTS
+    PUBLIC NOMINMAX)
+  set_target_properties(${NAME} PROPERTIES PREFIX "lib" IMPORT_PREFIX "lib")
 
-	#if(LIMA_ENABLE_PYTHON)
-	#	limatools_run_sip_for_camera(${NAME})
-	#	install(FILES python/__init__.py DESTINATION "${PYTHON_SITE_PACKAGES_DIR}/Lima/Hamamatsu")
-	#endif()
+# Binding code for python
+if(LIMA_ENABLE_PYTHON)
+  include(LimaTools)
+  limatools_run_sip_for_camera(${NAME})
+endif()
+
+# Generate and install package config file and version
+if(CAMERA_MASTER_PROJECT)
+  set (PROJECT_LIBRARIES ${NAME})
+  set(SIP_INSTALL_DIR ${CMAKE_INSTALL_DATADIR}/sip/lima)
+  set(CMAKE_INSTALL_DIR ${CMAKE_INSTALL_DATADIR}/cmake/lima)
+  include(package_config)
+endif()
+
+## Installation
+
+    install(
+      TARGETS hamamatsu
+      EXPORT "${TARGETS_EXPORT_NAME}"
+      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}   # import library
+      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}   # .so files are libraries
+      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}   # .dll files are binaries
+      INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}  # this does not actually install anything (but used by downstream projects)
+      )
+
+    install(
+      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+      COMPONENT devel
+      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+      FILES_MATCHING PATTERN "*.h"
+      )
+
+    install(
+      FILES
+      ${PROJECT_BINARY_DIR}/hamamatsu_export.h
+      COMPONENT devel
+      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+      )
+	if(LIMA_ENABLE_PYTHON)
+    install(
+      FILES python/__init__.py
+      DESTINATION "${PYTHON_SITE_PACKAGES_DIR}/Lima/Hamamatsu"
+      )
+	endif()
 else()
 	message(FATAL_ERROR "This camera has to be compiled on Windows")
 endif()
